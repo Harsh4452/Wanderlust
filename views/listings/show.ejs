@@ -17,7 +17,7 @@
             <p class="card-text">Owned By <%= listing.owner.username %></p>
             <p class="card-text"><%= listing.description %></p>
 
-            <!-- ✅ Price Section with GST toggle -->
+            <!-- Price Section with GST toggle -->
             <p class="card-text" id="show-price" data-base-price="<%= listing.price %>">
               ₹ <%= listing.price.toLocaleString("en-IN") %>
               <span id="gst-text" style="display:none;"> (incl. 18% GST)</span>
@@ -41,10 +41,11 @@
             </div>
         <% } %>
 
-        <div class="col-8 offset-3 mb-3">
+        <!-- Review Form -->
+        <div class="col-8 offset-3 mb-3 mt-4">
              <% if(currUser && !currUser._id.equals(listing.owner._id)){ %>
                 <h4>Leave a Review</h4>
-                <form action="/listings/<%= listing.id %>/reviews" method="post" novalidate class="needs-validation">
+                <form action="/listings/<%= listing._id %>/reviews" method="post" novalidate class="needs-validation">
                     <div class="mb-3 mt-3">
                         <label for="rating" class="form-label">Rating</label>
                         <fieldset class="starability-slot">
@@ -73,13 +74,35 @@
              <% } %>
         </div>
 
+        <!-- Display Reviews -->
+        <div class="col-8 offset-3 mt-4">
+            <h4>Reviews</h4>
+            <% if(listing.reviews.length === 0){ %>
+                <p>No reviews yet. Be the first to review!</p>
+            <% } else { %>
+                <ul class="list-group">
+                    <% listing.reviews.forEach(review => { %>
+                        <li class="list-group-item">
+                            <strong><%= review.author.username %></strong> 
+                            rated <strong><%= review.rating %> / 5</strong>
+                            <p><%= review.comment %></p>
+
+                            <% if(currUser && currUser._id.equals(review.author._id)){ %>
+                                <form action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE" method="POST">
+                                    <button class="btn btn-sm btn-danger">Delete</button>
+                                </form>
+                            <% } %>
+                        </li>
+                    <% }) %>
+                </ul>
+            <% } %>
+        </div>
+
     </div>
-    <div class="col-8 offset-3 mb-3">
+
+    <div class="col-8 offset-3 mb-3 mt-4">
         <h3>Where you will be</h3>
         <div id="map"></div>
-        
-        
-
     </div>
 </div>
 
@@ -101,4 +124,3 @@
     }
   });
 </script>
-
