@@ -29,7 +29,7 @@ const reviewRouter=require("./routes/review.js");
 const userRouter=require("./routes/user.js");
 
 const dbUrl=process.env.ATLASDB_URL;
-
+const port = process.env.PORT || 8080;
 
 main().then(()=>{
     console.log("database connected");
@@ -98,14 +98,16 @@ app.use((req,res,next)=>{
     res.locals.currUser=req.user;   //we cant access req.user in navbar.ejs directly so we use this
     next();
 })
+
+app.get("/", (req, res) => {
+    res.redirect("/listings"); // redirect to your listings page
+});
+
 app.use("/",userRouter);  //it should be first then listing then review
 app.use("/listings",listingRouter);
 app.use("/listings/:id/reviews",reviewRouter);
 
 
-app.get("/", (req, res) => {
-    res.redirect("/listings"); // redirect to your listings page
-});
 
 
 
@@ -120,9 +122,12 @@ app.use((err, req, res, next) => {
     res.status(statusCode).render("error.ejs", { err });
 });
 
-app.listen(8080,()=>{
-    console.log("app is listening at 8080");
-})
+
+
+app.listen(port, () => {
+    console.log(`App is listening at ${port}`);
+});
+
 
 
 
