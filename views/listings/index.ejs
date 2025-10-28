@@ -1,0 +1,132 @@
+<% layout("/layouts/boilerplate") %>
+
+<style>
+  #filters{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  #filters a{
+    text-decoration: none;
+  }
+
+  .filter{
+    text-align: center;
+    margin-right: 2rem;
+    margin-top: 2rem;
+    opacity:0.7;
+  }
+
+  .filter:hover{
+    opacity: 1;
+    cursor: pointer;
+  }
+
+  .filter p{
+    font-size: 0.8rem;
+  }
+
+  .tax-toggle{
+    border: 1px solid black;
+    border-radius: 1rem;
+    height: 3.25rem;
+    padding: 1rem;
+    margin-left: 5rem;
+    display: flex;
+    align-items: center;
+  }
+</style>
+
+
+<div id="filters">
+  <a href="/listings?category=trending" class="filter">
+    <div><i class="fa-solid fa-fire"></i></div>
+    <p>Trending</p>
+  </a>
+  <a href="/listings?category=rooms" class="filter">
+    <div><i class="fa-solid fa-bed"></i></div>
+    <p>Rooms</p>
+  </a>
+  <a href="/listings?category=iconic cities" class="filter">
+    <div><i class="fa-solid fa-mountain-city"></i></div>
+    <p>Iconic cities</p>
+  </a>
+  <a href="/listings?category=mountains" class="filter">
+    <div><i class="fa-solid fa-mountain"></i></div>
+    <p>Mountains</p>
+  </a>
+  <a href="/listings?category=castles" class="filter">
+    <div><i class="fa-brands fa-fort-awesome-alt"></i></div>
+    <p>Castles</p>
+  </a>
+  <a href="/listings?category=pools" class="filter">
+    <div><i class="fa-solid fa-person-swimming"></i></div>
+    <p>Amazing pools</p>
+  </a>
+  <a href="/listings?category=camping" class="filter">
+    <div><i class="fa-solid fa-tents"></i></div>
+    <p>Camping</p>
+  </a>
+  <a href="/listings?category=farms" class="filter">
+    <div><i class="fa-solid fa-cow"></i></div>
+    <p>Farms</p>
+  </a>
+  <a href="/listings?category=arctic" class="filter">
+    <div><i class="fa-solid fa-igloo"></i></div>
+    <p>Arctic</p>
+  </a>
+  <a href="/listings?category=domes" class="filter">
+    <div><i class="fa-solid fa-igloo"></i></div>
+    <p>Domes</p>
+  </a>
+  <a href="/listings?category=boats" class="filter">
+    <div><i class="fa-solid fa-ship"></i></div>
+    <p>Boats</p>
+  </a>
+
+  <div class="tax-toggle">
+    <div class="form-check-reverse form-switch">
+      <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+      <label class="form-check-label" for="flexSwitchCheckDefault">Display Total after taxes</label>
+    </div>
+  </div>
+</div>
+
+<div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-4">
+  <% for(let listing of allListings) { %>
+    <a href="/listings/<%= listing._id %>" class="listing-link" style="text-decoration: none">
+      <div class="card col listing-card">
+        <img src="<%= listing.image.url %>" class="card-img-top" alt="listing-img" style="height:20rem">
+        <div class="card-img-overlay"></div>
+        <div class="listing-card-body">
+          <p class="listing-card-text">
+            <b><%= listing.title %></b> <br>
+            &#8377; <span class="price"><%= listing.price.toLocaleString("en-IN") %></span> / night
+            <i class="tax-info"></i>
+          </p>
+        </div>
+      </div>
+    </a>
+  <% } %>
+</div>
+
+<script>
+  const taxSwitch = document.getElementById("flexSwitchCheckDefault");
+  const taxRate = 0.18; // 18% GST
+
+  taxSwitch.addEventListener("click", () => {
+    document.querySelectorAll(".listing-card-text").forEach(card => {
+      const priceElem = card.querySelector(".price");
+      const basePrice = Number(priceElem.dataset.basePrice || priceElem.innerText.replace(/,/g, ""));
+      priceElem.dataset.basePrice = basePrice; // store base price
+
+      if(taxSwitch.checked){
+        const totalPrice = Math.round(basePrice * (1 + taxRate));
+        priceElem.innerText = totalPrice.toLocaleString("en-IN");
+      } else {
+        priceElem.innerText = basePrice.toLocaleString("en-IN");
+      }
+    });
+  });
+</script>
